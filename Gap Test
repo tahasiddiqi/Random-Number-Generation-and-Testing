@@ -1,0 +1,36 @@
+clc
+clear
+X = load ('RandomNumbersLarge_1.txt');
+figure(1);
+GapArray(10000) = 0;
+GapVar = 7;
+Gap = 1;
+for n=1:1:length(GapArray)
+GapArray(n) = 0;
+end
+for n=1:1:length(X)
+if(GapVar ~= X(n))
+Gap = Gap + 1;
+else
+GapArray(Gap + 1) = GapArray(Gap + 1) + 1;
+Gap = 1;
+end
+end
+n=1:1:3000;
+plot(n,GapArray(n),'-b');
+hold on
+for n=1:1:length(GapArray)
+GapArray(n) = 0;
+end
+GapVar = 11;
+Gap = 1;
+for n=1:1:length(X)
+if(GapVar ~= X(n))
+Gap = Gap + 1;
+else
+GapArray(Gap + 1) = GapArray(Gap + 1) + 1;
+Gap = 1;
+end
+end
+n=1:1:3000;
+plot(n,GapArray(n),'-r');
