@@ -1,0 +1,127 @@
+format longE;
+clc
+clear
+X = load ('C:\MATLAB\RandomNumbersLarge_1.txt');
+count_0 = 0;
+count_255 = 0;
+count = zeros(256,1);
+count_c(256) = 0; %Initialization only with 0 or 1
+%Get Distribution
+for n=1:length(X)
+count(X(n) + 1) = count(X(n) + 1) + 1; %Array starts with 1 and not 0
+%Checking
+if X(n) == 0
+count_0 = count_0 + 1;
+end
+if X(n) == 255
+count_255 = count_255 + 1;
+end
+end
+%Expected Values for uniform distribution
+for n2 = 1:256
+count_c(n2) = 256*256;
+end
+figure(1)
+n2 = 1:256;
+plot(n2,count(n2),'-b+');
+hold on
+plot(n2,count_c(n2),'-r');
+%Get the number of occurences of a selected number in all blocks
+a = 13;
+count_a = zeros(256,1);
+ct = 0;
+for n=1:256:length(X)-256 %Analizing Blocks of 256
+for k=n:1:(n+256)
+if X(k) == a
+ct = ct + 1;
+end
+end
+count_a(ct + 1) = count_a(ct + 1) + 1;
+ct = 0;
+end
+figure(2)
+n2 = 1:256;
+ymax = (count_a(1)*1.2);
+plot(n2,count_a(n2),'-b+');
+axis([0 12 0 ymax]);
+figure(3)
+count_kol = 1;
+count_kk = zeros(256,1);
+count_ktest = zeros(256,1);
+for n=1:256:length(X)-256
+for k=n:1:(n+256)
+count_ktest(X(k) + 1) = count_ktest(X(k) + 1) + 1;
+end
+for k2=1:256
+if(count_ktest(k2) > 0)
+count_kol = count_kol + 1;
+end
+end
+count_kk(count_kol) = count_kk(count_kol) + 1;
+count_kol = 1;
+for k2=1:256
+count_ktest(k2) = 0;
+end
+end
+k = 1:256;
+plot(k,count_kk(k),'-g+');
+grid on
+figure(4);
+GapArray(10000) = 0;
+GapVar = 11;
+Gap = 1;
+for n=1:1:length(X)
+if(GapVar ~= X(n))
+Gap = Gap + 1;
+else
+GapArray(Gap + 1) = GapArray(Gap + 1) + 1;
+Gap = 1;
+end
+end
+n=1:1:3000;
+plot(n,GapArray(n),'-g');
+fid = fopen('Gap.txt','wt');
+fprintf(fid,'%i %i\n',[n;GapArray(n)]);
+fclose(fid);
+figure(5);
+Max = 1;
+countMax = zeros(256,1);
+for n=1:3:length(X)-3
+Max = max(X(n),X(n+1));
+Max = max(Max,X(n+2));
+countMax(Max) = countMax(Max) + 1;
+Max = 1;
+end
+n=1:1:256;
+plot(n,countMax(n),'-g');
+Count_Uni = zeros(256,1);
+for n=1:1:length(count)
+Count_Uni = count - 256*256;
+end
+X_0_1(256 * 256 * 32) = 0;
+Div = 256^8;
+OffSet = 1;
+for n=1:1:length(X_0_1)
+X_0_1(n) = X(OffSet)* 256^7;
+X_0_1(n) = X_0_1(n) + X(OffSet+1)* 256^6;
+X_0_1(n) = X_0_1(n) + X(OffSet+2)* 256^5;
+X_0_1(n) = X_0_1(n) + X(OffSet+3)* 256^4;
+X_0_1(n) = X_0_1(n) + X(OffSet+4)* 256^3;
+X_0_1(n) = X_0_1(n) + X(OffSet+5)* 256^2;
+X_0_1(n) = X_0_1(n) + X(OffSet+6)* 256;
+X_0_1(n) = X_0_1(n) + X(OffSet+7);
+X_0_1(n) = X_0_1(n)/Div;
+OffSet = OffSet + 8;
+end
+X_0_1_S = sort(X_0_1);
+h_ks = kstest(X_0_1_S);
+% v=-3:0.01:3; %values set
+% mu=0; sigma=1; %random variable parameters
+% ypdf=normpdf(v,mu,sigma); %normal PDF
+%h_norm = kstest(ypdf);
+h_run = runstest(X);
+Chi_Square = 0;
+for n=1:1:length(count)
+Chi_Square = Chi_Square + ((count(n) - 256*256)^2)/(256*256);
+end
+Chi_Square = Chi_Square/256;
